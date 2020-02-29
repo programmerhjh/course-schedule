@@ -1,0 +1,9 @@
+<div class="layui-side layui-bg-black" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="leftnav">
+    <div th:if="${#lists.contains(session.privilege, '2')}"><div th:replace="~{common/admin-leftnavbar.html::leftnav}"></div></div>
+    <div th:unless="${#lists.contains(session.privilege, '2')}">
+        <div th:if="${#lists.contains(session.privilege, '1')}" ><div th:replace="~{common/department-man-leftnavbar.html::leftnav}"></div></div>
+        <div th:unless="${#lists.contains(session.privilege, '1')}">
+            <div th:replace="~{common/teacher-leftnavbar.html::leftnav}"></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="layui-side-scroll" th:fragment="leftnav" xmlns:th="http://www.w3.org/1999/xhtml">
+    <ul class="layui-nav layui-nav-tree">
+        <li class="layui-nav-item" id="umg">
+            <a class="" href="javascript:;">用户管理<span class="layui-nav-more"></span></a>
+            <dl class="layui-nav-child">
+                <dd><a href="/admin/userListUI">用户列表</a></dd>
+        <li class="layui-nav-item">
+            <a href="javascript:;">账号创建<span class="layui-nav-more"></span></a>
+            <dl class="layui-nav-child">
+                <dd><a id="umg-bc-t">批量老师账号</a></dd>
+                <dd><a id="umg-bc-dm">批量院系负责人账号</a></dd>
+            </dl>
+        </li>
+        </dl>
+        </li>
+        <li class="layui-nav-item"><a href="/admin/facultyListUI">院系管理</a></li>
+        <li class="layui-nav-item"><a href="/admin/facultyTermListUI">学年管理</a></li>
+        <li class="layui-nav-item"><a href="/admin/applyListUI">申请管理</a></li>
+        <li class="layui-nav-item"><a href="/admin/facultyCourseListUI">课程管理</a></li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">Excel导入/导出</a>
+            <dl class="layui-nav-child">
+                <dd><a id="excel-export">Excel导出</a></dd>
+                <dd><a id="excel-import">Excel导入</a></dd>
+            </dl>
+        </li>
+    </ul>
+</div>

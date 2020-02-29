@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>课程管理</title>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="~{common/head::head}"></div>
+    <div th:replace="~{common/leftnavbar::leftnav}"></div>
+    <div class="layui-body">
+        <blockquote class="layui-elem-quote quoteBox">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input searchVal" placeholder="请输入院系" />
+                </div>
+                <a class="layui-btn search_btn" data-type="reload">搜索</a>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-field-box">
+                    点击院系管理该院系课程
+                </div>
+            </div>
+        </blockquote>
+        <table id="facultyCourseListTable" lay-filter="facultyCourseListTable"></table>
+    </div>
+    <div th:replace="~{common/footer::footer}"></div>
+</div>
+</body>
+<div th:insert="~{common/common::common}"/>
+<script src="/static/js/faculty-course-list.js" charset="utf-8" ></script>
+</html>

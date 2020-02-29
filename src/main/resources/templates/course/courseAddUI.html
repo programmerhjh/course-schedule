@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>课程信息操作页</title>
+</head>
+<body>
+    <br>
+    <div class="layui-form layui-row layui-col-space15">
+        <div class="layui-col-md8 layui-col-xs12" id="main">
+            <div class="layui-row layui-col-space2">
+                <div class="layui-col-md4 layui-col-xs7">
+                    <input type="hidden" class="layui-input state">
+                    <input type="hidden" class="layui-input id">
+                    <input type="hidden" class="layui-input semesterId">
+                    <input type="hidden" class="layui-input facultyId">
+                    <input type="hidden" class="layui-input theoryTeacherId">
+                    <input type="hidden" class="layui-input experimentClassTeacherId">
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">课程编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input num" lay-verify="required" placeholder="请输入课程编号">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">课程课时</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input time" lay-verify="number|required" placeholder="请输入课程课时">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">开课编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input onlineNum" lay-verify="required" placeholder="请输入开课编号">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">理论课老师</label>
+                        <div class="layui-input-block theoryTeacher">
+                            <select id="teacherList" lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3" style="padding-top: 20px;">
+                        <label class="layui-form-label">实验室名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input experimentClass" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="padding-top: 20px;">
+                        <label class="layui-form-label">实验课老师</label>
+                        <div class="layui-input-block experimentClassTeacher">
+                            <select id="teacherExpList" lay-search>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr style="margin-top: 34.5px;">
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">课程主任</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input director" placeholder="请输入">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4 layui-col-xs7">
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">课程名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input name" lay-verify="required" placeholder="请输入课程名称">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">教学班名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input className" lay-verify="required" placeholder="请输入教学班名称">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">起始周</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input startWeek" lay-verify="number|required" placeholder="请输入起始周">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">理论课教室类型要求</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input theoryClassType" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">实验课上课周次及节次</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input experimentPlanOnline" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">实验课排课要求</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input experimentClassPlanDesc" placeholder="请输入">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">所属教研室</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input researchOffice" placeholder="请输入">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4 layui-col-xs7">
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">学分</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input score" lay-verify="number|required" placeholder="请输入学分">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">上课人数</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input classCount" lay-verify="number|required" placeholder="请输入上课人数">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">结束周</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input endWeek" lay-verify="number|required" placeholder="请输入结束周">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">理论课排课要求</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input theoryPlanDesc" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">实验课班型</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input experimentClassType" placeholder="请输入">
+                        </div>
+                    </div>
+                    <hr style="margin-top: 107.5px;">
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label">评建老师</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input evaluationTeacher" placeholder="请输入">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-left: 220px;">
+                <button class="layui-btn layui-block" lay-filter="saveCourseFilter" lay-submit id="saveCourse" style="margin-left: 230px;margin-bottom: -80px;">保存</button>
+            </div>
+        </div>
+        <div class="layui-col-md4 layui-col-xs12" id="editExpand">
+            <blockquote class="layui-elem-quote title"><i class="seraph icon-caidan"></i>该院系这学期此门课申请列表</blockquote>
+            <div class="border">
+                <table id="applyListTable" lay-filter="applyListTable"></table>
+            </div>
+            <blockquote class="layui-elem-quote title magt10"><i class="layui-icon"></i>以往任教该课程的老师</blockquote>
+            <div class="border">
+                <table id="courseHistoryTeacherListTable" lay-filter="courseHistoryTeacherListTable"></table>
+            </div>
+        </div>
+    </div>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript">
+    layui.use(['form','layer','layedit','laydate','upload'],function(){
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : top.layer,
+            laypage = layui.laypage,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            $ = layui.jquery,
+            table = layui.table;
+        var teacherList = $("#teacherList");
+        var teacherExpList = $("#teacherExpList");
+        $(document).ready(function () {
+            var state = $(".state").val();
+            var url = "/admin/courseAddData/" + $(".facultyId").val() + '/' + $(".semesterId").val();
+            axios.post(url,{}).then(function (res) {
+                if (!res.data.success) {
+                    layer.msg(res.data.errorMsg);
+                    return;
+                }
+                var dataArr = res.data.data;
+                for (var i=0;i<dataArr.length;i++){
+                    teacherList.append('<option value="' + dataArr[i].userId + '">' + dataArr[i].usernameWithHasTime + '</option>');
+                    teacherExpList.append('<option value="' + dataArr[i].userId + '">' + dataArr[i].usernameWithHasTime + '</option>');
+                }
+                teacherList.val($(".theoryTeacherId").val());
+                teacherExpList.val($(".experimentClassTeacherId").val());
+                form.render();
+            });
+            if (state == 0){
+                $("#editExpand").remove();
+                $("#main").removeClass("layui-col-md8").addClass("layui-col-md11");
+                form.render();
+                return;
+            }
+
+            var courseHistoryTeacherListUrl = '/admin/courseHistoryTeacherList/' + $(".id").val();
+            var applyListUrl = '/admin/courseApplyList/' + $(".id").val();
+
+
+            table.render({
+                elem: '#courseHistoryTeacherListTable',
+                url: courseHistoryTeacherListUrl,
+                method: 'post',
+                contentType: 'application/json',
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data,
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                cellMinWidth: 95,
+                height: "200px",
+                cols: [
+                    [
+                        {field: 'termName', title: '学期', width: 250, align: "center"},
+                        {field: 'teacherName', title: '老师', width: 250, align: "center"}
+                    ]
+                ]
+            });
+            table.render({
+                elem: '#applyListTable',
+                url: applyListUrl,
+                method: 'post',
+                contentType: 'application/json',
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data.data,
+                        "count": res.data.totalSize
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                cellMinWidth: 95,
+                page: true,
+                height: "200px",
+                limit: 5,
+                limits: [8, 10],
+                cols: [
+                    [
+                        {field: 'name', title: '申请人', align: "center"},
+                        {field: 'reason', title: '申请理由', align: "center"},
+                        {
+                            field: 'createTime', title: '创建申请时间', width: 220, align: 'center', templet: function (d) {
+                                if (d.createTime) {
+                                    return layui.util.toDateString(d.createTime, 'yyyy年MM月dd日 HH:mm:ss');
+                                }
+                                return '无数据';
+                            }
+                        },
+                        {
+                            field: 'modifyTime', title: '申请修改时间', width: 220, align: 'center', templet: function (d) {
+                                if (d.modifyTime) {
+                                    return layui.util.toDateString(d.modifyTime, 'yyyy年MM月dd日 HH:mm:ss');
+                                }
+                                return '无数据';
+                            }
+                        }
+                    ]
+                ]
+            });
+            form.render();
+
+        });
+
+        form.on('submit(saveCourseFilter)', function (data) {
+            var index = parent.layer.msg('数据提交中，请稍候', {icon: 16, time: false, shade: 0.8});
+            var courseData = JSON.stringify({
+                "id": $(".id").val() === undefined ? null : $(".id").val(),  //ID
+                "semesterId": $(".semesterId").val() === undefined ? null : $(".semesterId").val(),
+                "facultyId": $(".facultyId").val() === undefined ? null : $(".facultyId").val(),
+                "num": $(".num").val() === "" ||  $(".num").val() === undefined ? null : $(".num").val(),
+                "name": $(".name").val() === "" ||  $(".name").val() === undefined ? null : $(".name").val(),
+                "score": $(".score").val() === undefined ? null : $(".score").val(),
+                "time": $(".time").val() === undefined ? null : $(".time").val(),
+                "className": $(".className").val() === "" ||  $(".className").val() === undefined ? null : $(".className").val(),
+                "classCount": $(".classCount").val() === undefined ? null : $(".classCount").val(),
+                "onlineNum": $(".onlineNum").val() === "" ||  $(".onlineNum").val() === undefined ? null : $(".onlineNum").val(),
+                "startWeek": $(".startWeek").val() === undefined ? null : $(".startWeek").val(),
+                "endWeek": $(".endWeek").val() === undefined ? null : $(".endWeek").val(),
+                "theoryClassType": $(".theoryClassType").val() === "" ||  $(".theoryClassType").val() === undefined ? null : $(".theoryClassType").val(),
+                "theoryTeacherId": $("#teacherList").val() === undefined ? null : $("#teacherList").val(),
+                "theoryTeacher": $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === "" ||  $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === undefined ? null : $(".theoryTeacher").find(".layui-this").text().split(" ")[0],
+                "theoryPlanDesc": $(".theoryPlanDesc").val() === "" ||  $(".theoryPlanDesc").val() === undefined ? null : $(".theoryPlanDesc").val(),
+                "experimentPlanOnline": $(".experimentPlanOnline").val() === "" ||  $(".experimentPlanOnline").val() === undefined ? null : $(".experimentPlanOnline").val(),
+                "experimentClass": $(".experimentClass").val() === "" ||  $(".experimentClass").val() === undefined ? null : $(".experimentClass").val(),
+                "experimentClassType": $(".experimentClassType").val() === "" ||  $(".experimentClassType").val() === undefined ? null : $(".experimentClassType").val(),
+                "experimentClassTeacherId": $("#teacherExpList").val() === undefined ? null : $("#teacherExpList").val(),
+                "experimentClassTeacher": $(".experimentClassTeacher").find(".layui-this").text() === "" ||  $(".experimentClassTeacher").find(".layui-this").text() === undefined ? null : $(".experimentClassTeacher").find(".layui-this").text(),
+                "experimentClassPlanDesc": $(".experimentClassPlanDesc").val() === "" ||  $(".experimentClassPlanDesc").val() === undefined ? null : $(".experimentClassPlanDesc").val(),
+                "director": $(".director").val() === "" ||  $(".director").val() === undefined ? null : $(".director").val(),
+                "researchOffice": $(".researchOffice").val() === "" ||  $(".researchOffice").val() === undefined ? null : $(".researchOffice").val(),
+                "evaluationTeacher": $(".evaluationTeacher").val() === "" ||  $(".evaluationTeacher").val() === undefined ? null : $(".evaluationTeacher").val(),
+            });
+            $.ajax({
+                type: "POST",
+                url: "/admin/saveCourse",
+                contentType: "application/json; charset=utf-8",
+                data: courseData,
+                success: function (res) {
+                    if (res.success) {
+                        parent.layer.close(index);
+                        parent.layer.msg("操作成功！");
+                        setTimeout(function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        },1000);
+                    } else {
+                        parent.layer.close(index);
+                        parent.layer.msg(res.errorMsg);
+                    }
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

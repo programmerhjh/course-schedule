@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>院系信息操作</title>
+</head>
+<body>
+<br>
+<div class="layui-form layui-row layui-col-space10">
+    <div class="layui-col-md9 layui-col-xs12">
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md9 layui-col-xs7">
+                <input type="hidden" class="layui-input id">
+                <div class="layui-form-item magt3">
+                    <label class="layui-form-label layui-required">院系名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input name" placeholder="请输入院系名称">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <button class="layui-btn layui-block" lay-filter="saveFacultyFilter" lay-submit id="saveFaculty" style="margin-left: 230px;margin-bottom: -80px;">保存</button>
+    </div>
+</div>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript" th:inline="JavaScript">
+
+    layui.use(['form','layer','layedit','laydate','upload'],function() {
+        var form = layui.form, layer = parent.layer === undefined ? layui.layer : top.layer,
+            laypage = layui.laypage,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            $ = layui.jquery;
+
+        $(document).ready(function () {
+            form.render();
+        })
+        form.on('submit(saveFacultyFilter)', function (data) {
+            var index = top.layer.msg('数据提交中，请稍候', {icon: 16, time: false, shade: 0.8});
+            $.ajax({
+                type: "POST",
+                url: "/admin/saveFaculty",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "id": $(".id").val() === undefined ? null : $(".id").val(),  //ID
+                    "name": $(".name").val() === "" ||  $(".name").val() === undefined ? null : $(".name").val(),  //用户名
+                }),
+                success: function (res) {
+                    if (res.success) {
+                        top.layer.close(index);
+                        top.layer.msg("操作成功！");
+                        setTimeout(function () {
+                            layer.closeAll("iframe");
+                            parent.location.reload();
+                        },1000);
+                    } else {
+                        top.layer.close(index);
+                        top.layer.msg(res.errorMsg);
+                    }
+                }
+            })
+        })
+    })
+
+</script>
+</body>
+</html>

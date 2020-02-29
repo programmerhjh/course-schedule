@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8">
+	<title>用户信息操作页</title>
+</head>
+<body>
+	<br>
+	<div class="layui-form layui-row layui-col-space10">
+		<div class="layui-col-md9 layui-col-xs12">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-md9 layui-col-xs7">
+					<input type="hidden" class="layui-input id">
+					<div class="layui-form-item magt3">
+						<label class="layui-form-label">姓名</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input name" placeholder="请输入姓名(可用于登录)">
+						</div>
+					</div>
+					<div class="layui-form-item magt3">
+						<label class="layui-form-label layui-required">账户</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input account" lay-verify="znch|required" placeholder="请输入账户(可用于登录)">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">院系</label>
+						<div class="layui-input-block faculty">
+							<select id="facultyList" lay-search>
+								<option value="">请选择</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item magt3">
+						<label class="layui-form-label">角色</label>
+						<div class="layui-input-block privilege">
+							<select id="roleList" lay-search>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item delete">
+						<label class="layui-form-label"><i class="seraph icon-zhiding"></i>是否禁用</label>
+						<div class="layui-input-block">
+							<input type="checkbox" name="delete" lay-skin="switch" lay-text="是|否">
+						</div>
+					</div>
+					<div class="layui-form-item magt3">
+						<label class="layui-form-label">邮箱</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input email" lay-verify="email" placeholder="请输入邮箱(用于找回密码)">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<button class="layui-btn layui-block" lay-filter="saveUserFilter" lay-submit id="saveUser" style="margin-left: 230px;margin-bottom: -80px;">保存</button>
+		</div>
+	</div>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript" th:inline="JavaScript">
+
+	layui.use(['form','layer','layedit','laydate','upload'],function() {
+        var form = layui.form, layer = parent.layer === undefined ? layui.layer : top.layer,
+            laypage = layui.laypage,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            $ = layui.jquery;
+
+        var roleSelect = $("#roleList"),
+            facultySelect = $("#facultyList"),
+            roleList = JSON.parse([[${roleList}]]),
+            facultyList = JSON.parse([[${facultyList}]]);
+        for (var r in roleList) {
+            roleSelect.append("<option value='" + roleList[r].privilegeCode + "'>" + roleList[r].privilegeName + "</option>");
+        }
+        for (var f in facultyList) {
+            facultySelect.append("<option value='" + facultyList[f].id + "'>" + facultyList[f].name + "</option>");
+        }
+        form.render();
+        $(document).ready(function () {
+            form.render();
+        })
+		form.verify({
+            znch: function (val) {
+                if (!(/^[a-z0-9]+$/i.test(val))){
+                    return '账号只能由英文数字组成!';
+                }
+            }
+		})
+        form.on('submit(saveUserFilter)', function (data) {
+            var index = top.layer.msg('数据提交中，请稍候', {icon: 16, time: false, shade: 0.8});
+            $.ajax({
+                type: "POST",
+                url: "/admin/saveUser",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "id": $(".id").val() === undefined ? null : $(".id").val(),  //ID
+                    "faculty": parseInt($('.faculty select').val()) === NaN ? null : parseInt($('.faculty select').val()),    //院系
+                    "privilege": $('.privilege select').val(),    //权限
+                    "delete": data.field.delete === "on" ? 1 : 0,    //是否禁用
+                    "account": $(".account").val(),  //账号
+                    "name": $(".name").val() === "" ||  $(".name").val() === undefined ? null : $(".name").val(),  //用户名
+                    "email": $(".email").val() === "" ||  $(".email").val() === undefined ? null : $(".email").val()  //邮箱
+                }),
+                success: function (res) {
+                    if (res.success) {
+                        top.layer.close(index);
+						top.layer.msg("操作成功！");
+                        setTimeout(function () {
+                        	layer.closeAll("iframe");
+                        	parent.location.reload();
+                        },1000);
+                    } else {
+                        top.layer.close(index);
+                        top.layer.msg(res.errorMsg);
+					}
+                }
+            })
+        })
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>广东东软学院排课管理系统</title>
+    <link href="../../static/css/style_log.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/style.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/element-ui.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../static/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="../../static/js/vue.js"></script>
+    <script type="text/javascript" src="../../static/js/qs.js"></script>
+    <script type="text/javascript" src="../../static/js/vue-router.js"></script>
+    <script type="text/javascript" src="../../static/js/element-ui.js"></script>
+    <script type="text/javascript" src="../../static/js/axios.js"></script>
+</head>
+
+<body class="login">
+<div id="app">
+    <div class="adcenter">
+        <img src="../../static/pic/logo.png" width="403px">
+    </div>
+    <div class="login_m" style="margin-top: -70px;">
+        <div class="login_logo">
+            <h3 class="login_padding">
+                <b>
+                    广东东软学院排课管理系统
+                </b>
+            </h3>
+        </div>
+        <div class="login_boder" id="login_piece">
+            <!-- 登录 -->
+            <div class="login_padding" id="login_model">
+                <h2>ACCOUNT</h2>
+                <label>
+                    <input type="text" id="username" name="username" class="txt_input txt_input2">
+                </label>
+                <h2>PASSWORD</h2>
+                <label>
+                    <input type="password" id="password" name="password" class="txt_input">
+                </label>
+                <br><br>
+                <div class="rem_sub">
+                    <div class="rem_sub_l">
+                        <input type="button" @click="forgetFirst" class="sub_button" value="找回密码">
+                    </div>
+                    <label>
+                        <input type="submit" class="sub_button" @click="loginProcess" value="登录">
+                        <!--<input type="submit" class="sub_button" value="登录">-->
+                    </label>
+                </div>
+            </div>
+
+            <!-- 找回密码第一步 -->
+            <div class="login_padding" id="forget_model" style="display: none;">
+                <h2>ACCOUNT</h2>
+                <label>
+                    <input type="text" id="account" class="txt_input txt_input2">
+                </label>
+                <h2>EMAIL</h2>
+                <label>
+                    <input type="text" id="email" class="txt_input txt_input2">
+                </label>
+                <br><br>
+                <div class="rem_sub">
+                    <div class="rem_sub_l">
+                        <input type="button" class="sub_button" @click="forgetSecond" style="margin-left: 90px;" value="下一步">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 找回密码第二步 -->
+            <div class="login_padding" id="forget2_model" style="display: none;">
+                <h2>PASSWORD</h2>
+                <label>
+                    <input type="password" id="re_password1" class="txt_input txt_input2">
+                </label>
+                <h2>RE-PASSWORD</h2>
+                <label>
+                    <input type="password" id="re_password2" class="txt_input txt_input2">
+                </label>
+                <br><br>
+                <div class="rem_sub">
+                    <div class="rem_sub_l">
+                        <input type="button" class="sub_button" @click="forgetThird" style="margin-left: 90px;" value="确认修改">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (window != top) {
+            top.location.href = location.href;
+        }
+    });
+    new Vue({
+        el: '#app',
+        data: {
+            account: '',
+            email: '',
+            newPassword: ''
+        },
+        methods: {
+            loginProcess: function () {
+                var vm = this;
+                var username = $("#username").val(), password = $("#password").val();
+                axios.post("/user/login", Qs.stringify({
+                    username: username,
+                    password: password
+                }),{
+                    headers:{ 'Content-Type': 'application/x-www-form-urlencoded'}
+                }).then(
+                    function(res){
+                        if (!res.data.success){
+                            vm.$message({
+                                message: res.data.errorMsg,
+                                type: 'error'
+                            });
+                        } else {
+                            window.location.href = '/course/schedule/csUI';
+                        }
+                    }
+                );
+            },
+            forgetFirst: function () {
+                $("div[id$='model']").hide();
+                $("#forget_model").show();
+            },
+            forgetSecond: function () {
+                // axios，确认存在，回调执行，展示;
+                var vm = this;
+                this.account = $("#account").val();
+                this.email = $("#email").val();
+                if ((this.account == '' || this.email == '')) {
+                    this.$message({
+                        message: '请填写相关内容',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                axios.post("/user/checkAccountWithEmail", {
+                    account: this.account,
+                    email: this.email
+                }).then(
+                    function(res){
+                        if (res.data.success){
+                            $("div[id$='model']").hide();
+                            $("#forget2_model").show();
+                            vm.$message({
+                                message: "请重置密码信息",
+                                type: 'success'
+                            });
+                        } else {
+                            vm.$message({
+                                message: res.data.errorMsg,
+                                type: 'error'
+                            });
+                        }
+                    }
+                );
+            },
+            forgetThird: function () {
+                var vm = this;
+                if ($("#re_password1").val() != $("#re_password2").val()){
+                    // 弹出层, 两次填写不对
+                    this.$message.error('两次密码不对应');
+                    return;
+                }
+                this.newPassword = $("#re_password1").val();
+                // axios, 回调显示成功，2秒重定位登陆页面
+                axios.post("/user/updateNewPassword", {
+                    password: this.newPassword,
+                    account: this.account,
+                    email: this.email
+                }).then(
+                    function(res){
+                        if (res.data.success){
+                            //  修改成功就弹出提示 修改成功，2秒后跳转登陆页
+                            vm.$message({
+                                message: '修改成功，2秒后跳转登陆页',
+                                type: 'success'
+                            });
+                            window.setTimeout(function () {
+                                window.location.href = '/user/loginUI';
+                            }, 2000);
+                        } else {
+                            vm.$message({
+                                message: res.data.errorMsg,
+                                type: 'error'
+                            });
+                        }
+                    }
+                );
+            }
+        }
+    });
+
+
+</script>
+</html>

@@ -1,0 +1,375 @@
+axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+layui.use(['form', 'layer', 'laydate', 'table', 'laytpl'], function () {
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        laydate = layui.laydate,
+        laytpl = layui.laytpl,
+        table = layui.table;
+
+    $("#courseFunction").hide();
+    var termSelect = $("#termList"), tableIns, url;
+    form.render();
+    $(document).ready(function () {
+        url = '/admin/termList/' + $(".fcId").val();
+        axios.get(url).then(
+            function (res) {
+                if (!res.data.success) {
+                    layer.msg(res.data.errorMsg);
+                    return;
+                }
+                var dataArr = res.data.data.data;
+                for (var i=0;i<dataArr.length;i++){
+                    termSelect.append('<option value="' + dataArr[i].id + '">&nbsp;' + dataArr[i].name + '</option>');
+                }
+                form.render();
+            }
+        );
+    })
+    form.render();
+
+    form.on('select(termSelect)', function (d) {
+        if (d.value === ''){
+            return;
+        }
+        var getStateUrl = "/admin/getTermApplyState/" + d.value;
+        axios.get(getStateUrl, {}).then(function (res) {
+            if (!res.data.success) {
+                layer.msg(res.data.errorMsg);
+                return;
+            }
+            if (res.data.data == 0){
+                $(".switchTerm input[name='switchTerm']").prop("checked", "");
+            } else {
+                $(".switchTerm input[name='switchTerm']").prop("checked", "on");
+            }
+            form.render();
+        });
+        $(".switchCourse input[name='switchCourse']").prop("checked", "on");
+        $("#courseFunction").show();
+        var fcId = $(".fcId").val();
+        var url = '/admin/courseList/'+ fcId + '/' + d.value;
+        tableIns = table.render({
+            elem: '#courseListTable',
+            url: url,
+            method: 'post',
+            contentType: 'application/json',
+            parseData: function (res) {
+                return {
+                    "errorCode": res.errorCode,
+                    "errorMsg": res.errorMsg,
+                    "data": res.data.data,
+                    "count": res.data.totalSize
+                };
+            },
+            response: {
+                statusName: 'errorCode',
+                statusCode: 200,
+                msgName: 'errorMsg'
+            },
+            cellMinWidth: 95,
+            page: true,
+            height: "full",
+            limit: 12,
+            limits: [12, 20, 50],
+            cols: [
+                [
+                    {type: "checkbox", fixed: "left", width: 50},
+                    {field: 'id', title: 'ID', width: 50, align: "center"},
+                    {field: 'name', title: '课程名称', width: 150, align: "center"},
+                    {field: 'num', title: '课程编号', align: "center"},
+                    {field: 'score', title: '学分', align: "center"},
+                    {field: 'time', title: '课程课时', align: "center"},
+                    {field: 'className', title: '教学班名称', width: 120, align: "center"},
+                    {field: 'classCount', title: '上课人数', align: "center"},
+                    {field: 'onlineNum', title: '开课编号', align: "center"},
+                    {field: 'startWeek', title: '起始周', align: "center"},
+                    {field: 'endWeek', title: '结束周', align: "center"},
+                    {field: 'theoryTeacher', title: '理论课任课老师', width: 180, align: "center"},
+                    {field: 'theoryClassType', title: '理论课教室及类型要求', width: 250, align: "center"},
+                    {field: 'theoryPlanDesc', title: '理论课排课要求', width: 250, align: "center"},
+                    {field: 'experimentClassTeacher', title: '实验课任课老师', width: 180, align: "center"},
+                    {field: 'experimentPlanOnline', title: '实验课上课周次及节次', width: 250, align: "center"},
+                    {field: 'experimentClass', title: '实验室名称', width: 250, align: "center"},
+                    {field: 'experimentClassType', title: '实验课班型', width: 250, align: "center"},
+                    {field: 'experimentClassPlanDesc', title: '实验课排课要求', width: 250, align: "center"},
+                    {field: 'director', title: '课程主任', align: "center"},
+                    {field: 'researchOffice', title: '所属教研室', width: 250, align: "center"},
+                    {field: 'evaluationTeacher', title: '评建老师', align: "center"},
+                    {
+                        field: 'createTime', title: '创建时间', width: 250, align: 'center', templet: function (d) {
+                        if (d.createTime) {
+                            return layui.util.toDateString(d.createTime, 'yyyy年MM月dd日 HH:mm:ss');
+                        }
+                        return '无数据';
+                    }
+                    },
+                    {
+                        field: 'modifyTime', title: '最后修改时间', width: 250, align: 'center', templet: function (d) {
+                        if (d.modifyTime) {
+                            return layui.util.toDateString(d.modifyTime, 'yyyy年MM月dd日 HH:mm:ss');
+                        }
+                        return '无数据';
+                    }
+                    },
+                    {title: '操作', width: 170, toolbar: '#courseListBar', fixed: "right", align: "center"}
+                ]
+            ]
+        });
+        form.render();
+    })
+
+    form.on('switch(switchTermApplyFilter)', function(d){
+        var data;
+        if (d.elem.checked) {
+            data = { id : $("#termList").val(), state : 1 };
+            layer.confirm('完成课程设置，确定开放此学期申请？', {icon: 3, title: '提示信息'}, function (index) {
+                axios.post("/admin/openTermApply", data).then(function (res) {
+                    if (!res.data.success) {
+                        layer.msg(res.data.errorMsg);
+                        return;
+                    }
+                    layer.close(index);
+                });
+            }, function () {
+                $(".switchTerm input[name='switchTerm']").prop("checked", "");
+                form.render();
+            })
+        } else {
+            data = { id : $("#termList").val(), state : 0 };
+            axios.post("/admin/openTermApply", data).then(function (res) {
+                console.log(res)
+                if (!res.data.success) {
+                    layer.msg(res.data.errorMsg);
+                    return;
+                }
+            });
+        }
+
+    });
+
+    form.on('switch(switchCourseFilter)', function(d){
+        var url = '/admin/courseList/'+ $(".fcId").val() + '/' + $("#termList").val();
+        if (d.elem.checked) {
+            tableIns.reload({
+                url: url,
+                method: 'post',
+                contentType: "application/json; charset=utf-8",
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data.data,
+                        "count": res.data.totalSize
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                where: {
+                    page: this.page,
+                    limit: this.limit,
+                    extendField: false
+                }
+            })
+        } else {
+            tableIns.reload({
+                url: url,
+                method: 'post',
+                contentType: "application/json; charset=utf-8",
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data.data,
+                        "count": res.data.totalSize
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                where: {
+                    page: this.page,
+                    limit: this.limit,
+                    extendField: true
+                }
+            })
+        }
+    });
+
+    // 列表操作
+    table.on("tool(courseListTable)", function (obj) {
+        var layEvent = obj.event,
+            data = obj.data;
+        if (layEvent === 'edit') { //编辑
+            addCourse(data);
+        } else if (layEvent === 'del') { //删除
+            layer.confirm('确定删除这门课程吗？', {icon: 3, title: '提示信息'}, function (index) {
+                axios.post("/admin/deleteCourse", {
+                    id: data.id
+                }).then(
+                    function (res) {
+                        if (!res.data.success) {
+                            layer.msg(res.data.errorMsg);
+                            return;
+                        }
+                        tableIns.reload();
+                        layer.close(index);
+                    }
+                );
+            });
+        }
+    });
+
+    $(".search_btn").on("click", function () {
+        if ($(".searchVal").val() != '') {
+            tableIns.reload({
+                url: '/admin/searchCourse',
+                method: 'post',
+                contentType: "application/json; charset=utf-8",
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data.data,
+                        "count": res.data.totalSize
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                where: {
+                    key: $(".searchVal").val(),
+                    page: this.page,
+                    limit: this.limit,
+                    termId: $("#termList").val(),
+                    fcId: $(".fcId").val()
+                }
+            })
+        } else {
+            layer.msg("请输入搜索的内容");
+        }
+    });
+
+    $(".exportExcel_btn").on("click", function () {
+        layer.confirm('课程排课完毕，确定导出吗？', {icon: 3, title: '提示信息'}, function (index) {
+            axios({
+                method: 'post',
+                url: "/admin/exportExcelByFacultyAndTerm",
+                data: {
+                    fcId: $(".fcId").val(),
+                    termId: $("#termList").val()
+                },
+                responseType: 'blob'
+            }).then(
+                function(res){
+                    var blob = new Blob([res.data],{type: res.headers['content-type']});
+                    var downloadElement = document.createElement('a');
+                    var href = window.URL.createObjectURL(blob); //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = $(".term").find(".layui-this").text().trim() + '开课任务书-' + $(".fcName").val() + '.xlsx'; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click(); //点击下载
+                    document.body.removeChild(downloadElement); //下载完成移除元素
+                    window.URL.revokeObjectURL(href); //释放掉blob对象
+                    layer.close(index);
+                }
+            );
+        });
+    })
+
+    // 添加课程
+    function addCourse(edit) {
+        if (edit){
+            layui.layer.open({
+                title: "课程信息操作页",
+                type: 2,
+                content: "/admin/courseAddUI",
+                area: ['1400px', '600px'],
+                success: function (layero, index) {
+                    var body = layui.layer.getChildFrame('body', index);
+                    body.find(".facultyId").val($(".fcId").val());
+                    body.find(".semesterId").val($("#termList").val());
+                    body.find(".state").val("1");
+                    body.find(".id").val(edit.id);
+
+                    body.find(".name").val(edit.name);
+                    body.find(".num").val(edit.num);
+                    body.find(".time").val(edit.time);
+                    body.find(".onlineNum").val(edit.onlineNum);
+                    body.find(".theoryTeacherId").val(edit.theoryTeacherId);
+                    body.find(".experimentClass").val(edit.experimentClass);
+                    body.find(".experimentClassTeacherId").val(edit.experimentClassTeacherId);
+                    body.find(".director").val(edit.director);
+                    body.find(".startWeek").val(edit.startWeek);
+                    body.find(".theoryClassType").val(edit.theoryClassType);
+                    body.find(".experimentPlanOnline").val(edit.experimentPlanOnline);
+                    body.find(".experimentClassPlanDesc").val(edit.experimentClassPlanDesc);
+                    body.find(".researchOffice").val(edit.researchOffice);
+                    body.find(".score").val(edit.score);
+                    body.find(".classCount").val(edit.classCount);
+                    body.find(".className").val(edit.className);
+                    body.find(".endWeek").val(edit.endWeek);
+                    body.find(".theoryPlanDesc").val(edit.theoryPlanDesc);
+                    body.find(".experimentClassType").val(edit.experimentClassType);
+                    body.find(".evaluationTeacher").val(edit.evaluationTeacher);
+                },
+                end: function () {
+                    tableIns.reload();
+                }
+            })
+        } else {
+            layui.layer.open({
+                title: "课程信息操作页",
+                type: 2,
+                content: "/admin/courseAddUI",
+                area: ['1000px', '600px'],
+                success: function (layero, index) {
+                    var body = layui.layer.getChildFrame('body', index);
+                    body.find(".facultyId").val($(".fcId").val());
+                    body.find(".semesterId").val($("#termList").val());
+                    body.find(".state").val("0");
+                },
+                end: function () {
+                    tableIns.reload();
+                }
+            })
+        }
+
+    }
+
+    $(".addCourse_btn").click(function () {
+        addCourse();
+    })
+
+    //批量删除
+    $(".delAll_btn").click(function () {
+        var checkStatus = table.checkStatus('courseListTable'),
+            data = checkStatus.data,
+            ids = [];
+        if (data.length > 0) {
+            for (var i in data) {
+                ids.push(data[i].id);
+            }
+            layer.confirm('确定删除选中的课程吗？', {icon: 3, title: '提示信息'}, function (index) {
+                axios.post("/admin/batchDeleteCourses", ids).then(function (res) {
+                    if (!res.data.success) {
+                        layer.msg(res.data.errorMsg);
+                        return;
+                    }
+                    tableIns.reload();
+                    layer.close(index);
+                });
+            })
+        } else {
+            layer.msg("请选择需要删除的课程");
+        }
+    })
+
+});

@@ -1,0 +1,9 @@
+<div th:fragment="head" class="layui-header header" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="layui-logo">排课管理系统</div>
+    <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item">
+            [[${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}]]
+        </li>
+        <li class="layui-nav-item"><a href="/user/logout">登出</a></li>
+    </ul>
+</div>

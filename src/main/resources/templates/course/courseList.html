@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>指定院系课程管理页</title>
+</head>
+<body>
+<div class="layui-form layui-layout layui-layout-admin">
+    <input type="hidden" class="layui-input fcId">
+    <input type="hidden" class="layui-input fcName">
+    <blockquote class="layui-elem-quote quoteBox">
+        <div class="layui-inline">
+            <div class="layui-form-item term">
+                <select id="termList" lay-filter="termSelect" lay-search>
+                    <option value="">请选择学年</option>
+                </select>
+            </div>
+        </div>
+        <div id="courseFunction">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input searchVal" placeholder="请输入搜索的课程" />
+                </div>
+                <a class="layui-btn search_btn" data-type="reload">搜索</a>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-normal addCourse_btn">添加课程</a>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-danger layui-btn-normal delAll_btn">批量删除</a>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-warm layui-btn-normal exportExcel_btn">导出学年Excel</a>
+            </div>
+            <div class="layui-inline" style="padding-left: 600px;">
+                <div class="layui-inline switchTerm">
+                    <input type="checkbox" checked="" name="switchTerm" lay-skin="switch" lay-filter="switchTermApplyFilter" lay-text="关闭学年申请|开放学年申请">
+                </div>
+                &nbsp;
+                <div class="layui-inline switchCourse">
+                    <input type="checkbox" checked="" name="switchCourse" lay-skin="switch" lay-filter="switchCourseFilter" lay-text="所有课程|未分配老师课程">
+                </div>
+            </div>
+        </div>
+    </blockquote>
+    <table id="courseListTable" lay-filter="courseListTable"></table>
+    <script type="text/html" id="courseListBar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">补全信息</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除课程</a>
+    </script>
+</div>
+</body>
+<div th:insert="~{common/common::common}"/>
+<script src="/static/js/course-list.js" charset="utf-8" ></script>
+</html>

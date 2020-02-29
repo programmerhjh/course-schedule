@@ -1,0 +1,6 @@
+.layui-form-label.layui-required:before{
+    content:"*";
+    color:red;
+    top:5px;
+    left:15px;
+}
