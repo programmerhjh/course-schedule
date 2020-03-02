@@ -5,6 +5,7 @@ import com.neusoft.course.schedule.entity.Course;
 import com.neusoft.course.schedule.entity.Faculty;
 import com.neusoft.course.schedule.vo.CourseAddPageSelectUserVO;
 import com.neusoft.course.schedule.vo.CourseHistoryTeacherVO;
+import com.neusoft.course.schedule.vo.UserCourseTermInfoVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -116,4 +117,37 @@ public interface CourseMapper {
      * @return
      */
     Integer batchInsertCourses(@Param("courses") List<Course> courses);
+
+    /**
+     * 查询用户课程列表
+     * @param userId
+     * @return
+     */
+    List<Course> selectCoursesByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 查询指定学年用户课程列表
+     * @param userId
+     * @param termId
+     * @return
+     */
+    List<Course> selectCoursesByUserIdAndTermId(@Param("userId") Integer userId, @Param("termId") Integer termId);
+
+    /**
+     * 模糊搜索用户历史课程
+     * @param userId
+     * @param key 课程名
+     * @return
+     */
+    List<Course> selectCoursesByUserIdAndKey(@Param("userId") Integer userId, @Param("key") String key);
+
+    /**
+     * 计算用户当前学期的课程信息 (当前学期课时情况)
+     * @param userId
+     * @param fcId
+     * @param termId
+     * @return
+     */
+    UserCourseTermInfoVO getUserCourseTermInfo(@Param("userId") Integer userId, @Param("fcId") Integer fcId, @Param("termId") Integer termId);
+
 }

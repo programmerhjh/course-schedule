@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>广东东软学院排课管理系统</title>
     <link href="../../static/css/style_log.css" rel="stylesheet" type="text/css">
     <link href="../../static/css/style.css" rel="stylesheet" type="text/css">
     <link href="../../static/css/element-ui.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/static/js/css/layui.css" media="all">
     <script type="text/javascript" src="../../static/js/jquery-3.4.1.js"></script>
     <script type="text/javascript" src="../../static/js/vue.js"></script>
     <script type="text/javascript" src="../../static/js/qs.js"></script>
     <script type="text/javascript" src="../../static/js/vue-router.js"></script>
     <script type="text/javascript" src="../../static/js/element-ui.js"></script>
     <script type="text/javascript" src="../../static/js/axios.js"></script>
+    <script src="/static/js/layui.all.js" charset="utf-8" ></script>
 </head>
 
 <body class="login">
@@ -45,7 +47,6 @@
                     </div>
                     <label>
                         <input type="submit" class="sub_button" @click="loginProcess" value="登录">
-                        <!--<input type="submit" class="sub_button" value="登录">-->
                     </label>
                 </div>
             </div>
@@ -85,7 +86,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -120,7 +120,33 @@
                                 type: 'error'
                             });
                         } else {
-                            window.location.href = '/course/schedule/csUI';
+                            if (res.data.data && res.data.data.url){
+                                layui.use(['form','layer','layedit','laydate'],function() {
+                                    var form = layui.form, layer = parent.layer === undefined ? layui.layer : top.layer,
+                                        laypage = layui.laypage,
+                                        layedit = layui.layedit,
+                                        laydate = layui.laydate,
+                                        $ = layui.jquery;
+
+                                    layui.layer.open({
+                                        title : "完善用户资料",
+                                        type : 2,
+                                        content : res.data.data.url,
+                                        area: ['500px', '500px'],
+                                        closeBtn: 0,
+                                        success : function(layero, index){
+                                            var body = layui.layer.getChildFrame('body', index);
+                                            body.find(".id").val(res.data.data.id);
+                                            body.find(".account").val(res.data.data.account);
+                                        },
+                                        cancel: function () {
+                                            window.location.href = '/course/schedule/csUI';
+                                        }
+                                    })
+                                })
+                            } else {
+                                window.location.href = '/course/schedule/csUI';
+                            }
                         }
                     }
                 );

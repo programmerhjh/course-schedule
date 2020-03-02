@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.neusoft.course.schedule.constants.ServiceConstants;
 import com.neusoft.course.schedule.dto.SearchApplyDTO;
-import com.neusoft.course.schedule.dto.SearchDTO;
+import com.neusoft.course.schedule.dto.SearchUserApplyDTO;
 import com.neusoft.course.schedule.entity.*;
 import com.neusoft.course.schedule.enums.ResultCode;
 import com.neusoft.course.schedule.mapper.ApplyMapper;
@@ -14,6 +14,7 @@ import com.neusoft.course.schedule.service.ApplyService;
 import com.neusoft.course.schedule.utils.PageUtils;
 import com.neusoft.course.schedule.vo.ApplyListVO;
 import com.neusoft.course.schedule.vo.CourseEditPageApplyListVO;
+import com.neusoft.course.schedule.vo.UserApplyListVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +119,44 @@ public class ApplyServiceImpl implements ApplyService {
         return row;
     }
 
+    @Override
+    public PageResult<UserApplyListVO> getUserApplyList(Integer userId, PageEntity pageEntity) {
+        return PageUtils.getPageResult(getPageInfoByUserId(pageEntity, userId));
+    }
+
+    @Override
+    public PageResult<UserApplyListVO> getUserApplyList(Integer userId, Integer termId, PageEntity pageEntity) {
+        return PageUtils.getPageResult(getPageInfoByUserIdAndTermId(pageEntity, userId, termId));
+    }
+
+    @Override
+    public PageResult<UserApplyListVO> searchUserApply(SearchUserApplyDTO searchUserApplyDTO) {
+        return PageUtils.getPageResult(getPageLikeInfoByUserId(searchUserApplyDTO));
+    }
+
+    @Override
+    public List<Integer> getApplyIds(Integer userId) {
+        return applyMapper.getApplyIdsByUserId(userId);
+    }
+
+    @Override
+    public Integer deleteApplyCourse(Integer courseId, Integer userId) {
+        Integer row = applyMapper.deleteApplyByUserIdAndCourseId(userId, courseId);
+        if (row <= 0){
+            throw new RuntimeException(ResultCode.COMMON_FAIL.getMessage());
+        }
+        return row;
+    }
+
+    @Override
+    public Integer saveApply(Apply apply) {
+        Integer row = applyMapper.saveApply(apply);
+        if (row <= 0){
+            throw new RuntimeException(ResultCode.COMMON_FAIL.getMessage());
+        }
+        return row;
+    }
+
     /**
      * 调用分页插件完成分页
      * @param pageEntity
@@ -185,6 +224,30 @@ public class ApplyServiceImpl implements ApplyService {
         PageHelper.startPage(pageNum, pageSize);
         List<ApplyListVO> applyListVOList = applyMapper.searchApplyByFacultyId(searchDTO.getFcId(), searchDTO.getKey());
         return new PageInfo<>(applyListVOList);
+    }
+
+    private PageInfo<UserApplyListVO> getPageInfoByUserId(PageEntity pageEntity, Integer userId) {
+        int pageNum = pageEntity.getPage();
+        int pageSize = pageEntity.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<UserApplyListVO> userApplyListVOList = applyMapper.selectApplyByUserId(userId);
+        return new PageInfo<>(userApplyListVOList);
+    }
+
+    private PageInfo<UserApplyListVO> getPageInfoByUserIdAndTermId(PageEntity pageEntity, Integer userId, Integer termId) {
+        int pageNum = pageEntity.getPage();
+        int pageSize = pageEntity.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<UserApplyListVO> userApplyListVOList = applyMapper.selectApplyByUserIdAndTermId(userId, termId);
+        return new PageInfo<>(userApplyListVOList);
+    }
+
+    private PageInfo<UserApplyListVO> getPageLikeInfoByUserId(SearchUserApplyDTO searchUserApplyDTO) {
+        int pageNum = searchUserApplyDTO.getPage();
+        int pageSize = searchUserApplyDTO.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<UserApplyListVO> userApplyListVOList = applyMapper.selectApplyByUserIdAndKey(searchUserApplyDTO.getUserId(), searchUserApplyDTO.getKey());
+        return new PageInfo<>(userApplyListVOList);
     }
 
 }

@@ -78,6 +78,11 @@ public class FacultyServiceImpl implements FacultyService{
         return row;
     }
 
+    @Override
+    public Faculty getFacultyDataById(Integer fcId) {
+        return facultyMapper.selectFacultyById(fcId);
+    }
+
     /**
      * 调用分页插件完成分页
      * @param pageEntity

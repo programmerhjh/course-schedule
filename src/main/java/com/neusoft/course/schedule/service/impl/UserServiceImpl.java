@@ -128,6 +128,15 @@ public class UserServiceImpl implements UserService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     @Override
     public Integer saveUser(User user) {
+        // complete 为1代表正在完善资料
+        if (!ObjectUtils.isEmpty(user.getComplete()) && user.getComplete().equals(1)){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            Integer row = userMapper.saveUser(user);
+            if (row <= 0){
+                throw new RuntimeException(ResultCode.COMMON_FAIL.getMessage());
+            }
+            return row;
+        }
         // 设置剩余的sql参数，密码在新增用户的时候会插入，更改的时候不会修改用户密码
         user.setPassword(passwordEncoder.encode(ServiceConstants.DEFAULT_PASSWORD));
         user.setComplete(0);
@@ -185,6 +194,26 @@ public class UserServiceImpl implements UserService {
         return pageResult;
     }
 
+    @Override
+    public PageResult<User> searchFacultyUser(Integer fcId, SearchDTO searchDTO) {
+        PageResult pageResult = PageUtils.getPageResult(getPageLikeInfoWithFcId(fcId, searchDTO));
+        setFacultyData(pageResult);
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<User> getUserListDataByFacultyId(Integer fcId, PageEntity pageEntity) {
+        if (ObjectUtils.isEmpty(pageEntity.getPage())){
+            PageResult<User> pageResult = new PageResult<>();
+            List<User> users = userMapper.selectUserListByFacultyId(fcId);
+            pageResult.setData(users);
+            return pageResult;
+        }
+        PageResult pageResult = PageUtils.getPageResult(getPageInfoWithFcId(fcId, pageEntity));
+        setFacultyData(pageResult);
+        return pageResult;
+    }
+
     /**
      * 调用分页插件完成分页
      * @param pageEntity
@@ -199,6 +228,20 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 调用分页插件完成分页
+     * @param fcId
+     * @param pageEntity
+     * @return
+     */
+    private PageInfo<User> getPageInfoWithFcId(Integer fcId, PageEntity pageEntity) {
+        int pageNum = pageEntity.getPage();
+        int pageSize = pageEntity.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> users = userMapper.selectUserListByFacultyId(fcId);
+        return new PageInfo<>(users);
+    }
+
+    /**
      * 调用分页插件完成模糊搜索分页
      * @param searchDTO
      * @return
@@ -208,6 +251,20 @@ public class UserServiceImpl implements UserService {
         int pageSize = searchDTO.getLimit();
         PageHelper.startPage(pageNum, pageSize);
         List<User> users = userMapper.searchUser(searchDTO.getKey());
+        return new PageInfo<>(users);
+    }
+
+    /**
+     * 调用分页插件完成模糊搜索分页
+     * @param fcId
+     * @param searchDTO
+     * @return
+     */
+    private PageInfo<User> getPageLikeInfoWithFcId(Integer fcId, SearchDTO searchDTO) {
+        int pageNum = searchDTO.getPage();
+        int pageSize = searchDTO.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> users = userMapper.searchFacultyUser(fcId, searchDTO.getKey());
         return new PageInfo<>(users);
     }
 

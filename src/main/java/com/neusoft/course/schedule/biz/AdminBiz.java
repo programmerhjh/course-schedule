@@ -60,9 +60,12 @@ public class AdminBiz {
         return "user/userList";
     }
 
-    @PostMapping(value = "userList")
+    @PostMapping(value = {"userList","userList/{fcId}"})
     @ResponseBody
-    public JsonResult getUserListData(@RequestBody(required = false) PageEntity pageEntity){
+    public JsonResult getUserListData(@PathVariable(value = "fcId", required = false) Integer fcId, @RequestBody(required = false) PageEntity pageEntity){
+        if (!org.springframework.util.ObjectUtils.isEmpty(fcId)){
+            return ResultGeneratorUtils.success(userService.getUserListDataByFacultyId(fcId, pageEntity));
+        }
         return ResultGeneratorUtils.success(userService.getUserListData(pageEntity));
     }
 
@@ -137,9 +140,12 @@ public class AdminBiz {
         return ResultGeneratorUtils.success();
     }
 
-    @PostMapping(value = "searchUser")
+    @PostMapping(value = {"searchUser", "searchUser/{fcId}"})
     @ResponseBody
-    public JsonResult searchUser(@RequestBody SearchDTO searchDTO){
+    public JsonResult searchUser(@PathVariable(value = "fcId", required = false) Integer fcId, @RequestBody SearchDTO searchDTO){
+        if (!org.springframework.util.ObjectUtils.isEmpty(fcId)){
+            return ResultGeneratorUtils.success(userService.searchFacultyUser(fcId, searchDTO));
+        }
         return ResultGeneratorUtils.success(userService.searchUser(searchDTO));
     }
 

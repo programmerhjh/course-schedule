@@ -25,7 +25,7 @@ public class CustomizeAuthenticationEntryPoint implements AuthenticationEntryPoi
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         JsonResult result = ResultGeneratorUtils.fail(ResultCode.USER_NOT_LOGIN);
-        httpServletResponse.setContentType("text/json;charset=utf-8");
+        httpServletResponse.setContentType("application/json;charset=utf-8");
         httpServletResponse.getWriter().write(JSON.toJSONString(result));
         httpServletResponse.sendRedirect("/user/loginUI");
     }

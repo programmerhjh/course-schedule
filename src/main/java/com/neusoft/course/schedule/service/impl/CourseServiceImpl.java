@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.neusoft.course.schedule.dto.ExportExcelByFacultyAndTermDTO;
 import com.neusoft.course.schedule.dto.SearchCourseDTO;
+import com.neusoft.course.schedule.dto.SearchUserApplyDTO;
 import com.neusoft.course.schedule.dto.UploadExcelImportCourseDTO;
 import com.neusoft.course.schedule.entity.Course;
 import com.neusoft.course.schedule.entity.PageEntity;
@@ -15,6 +16,8 @@ import com.neusoft.course.schedule.service.ExcelService;
 import com.neusoft.course.schedule.utils.PageUtils;
 import com.neusoft.course.schedule.vo.CourseAddPageSelectUserVO;
 import com.neusoft.course.schedule.vo.CourseHistoryTeacherVO;
+import com.neusoft.course.schedule.vo.UserApplyListVO;
+import com.neusoft.course.schedule.vo.UserCourseTermInfoVO;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,6 +120,26 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    public PageResult<Course> getCourseHistory(Integer userId, PageEntity pageEntity) {
+        return PageUtils.getPageResult(getPageInfoByUserId(pageEntity, userId));
+    }
+
+    @Override
+    public PageResult<Course> getCourseHistory(Integer userId, Integer termId, PageEntity pageEntity) {
+        return PageUtils.getPageResult(getPageInfoByUserIdAndTermId(pageEntity, userId, termId));
+    }
+
+    @Override
+    public PageResult<Course> searchUserHistoryCourse(SearchUserApplyDTO searchUserApplyDTO) {
+        return PageUtils.getPageResult(getPageLikeInfoByUserId(searchUserApplyDTO));
+    }
+
+    @Override
+    public UserCourseTermInfoVO getUserCourseTermInfo(Integer userId, Integer fcId, Integer termId) {
+        return courseMapper.getUserCourseTermInfo(userId, fcId, termId);
+    }
+
     /**
      * 调用分页插件完成分页
      * @param pageEntity
@@ -149,4 +172,29 @@ public class CourseServiceImpl implements CourseService {
         List<Course> courses = courseMapper.searchCourse(searchDTO.getFcId(), searchDTO.getTermId(), searchDTO.getKey());
         return new PageInfo<>(courses);
     }
+
+    private PageInfo<Course> getPageInfoByUserId(PageEntity pageEntity, Integer userId) {
+        int pageNum = pageEntity.getPage();
+        int pageSize = pageEntity.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Course> courses = courseMapper.selectCoursesByUserId(userId);
+        return new PageInfo<>(courses);
+    }
+
+    private PageInfo<Course> getPageInfoByUserIdAndTermId(PageEntity pageEntity, Integer userId, Integer termId) {
+        int pageNum = pageEntity.getPage();
+        int pageSize = pageEntity.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Course> courses = courseMapper.selectCoursesByUserIdAndTermId(userId, termId);
+        return new PageInfo<>(courses);
+    }
+
+    private PageInfo<Course> getPageLikeInfoByUserId(SearchUserApplyDTO searchUserApplyDTO) {
+        int pageNum = searchUserApplyDTO.getPage();
+        int pageSize = searchUserApplyDTO.getLimit();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Course> courses = courseMapper.selectCoursesByUserIdAndKey(searchUserApplyDTO.getUserId(), searchUserApplyDTO.getKey());
+        return new PageInfo<>(courses);
+    }
+
 }

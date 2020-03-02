@@ -107,4 +107,19 @@ public interface UserService {
      */
     PageResult<User> searchUser(SearchDTO searchDTO);
 
+    /**
+     * 模糊搜索院系下key相关的用户（包含name，account，email）
+     * @param fcId
+     * @param searchDTO
+     * @return
+     */
+    PageResult<User> searchFacultyUser(Integer fcId, SearchDTO searchDTO);
+
+    /**
+     * 查询院系下的用户
+     * @param fcId
+     * @param pageEntity
+     * @return
+     */
+    PageResult<User> getUserListDataByFacultyId(Integer fcId, PageEntity pageEntity);
 }

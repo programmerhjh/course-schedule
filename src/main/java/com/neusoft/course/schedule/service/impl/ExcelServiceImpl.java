@@ -131,13 +131,9 @@ public class ExcelServiceImpl implements ExcelService{
             if (CollectionUtils.isEmpty(courses)){
                 throw new RuntimeException(ServiceConstants.EXCEL_HAVE_NOTHING_DATA);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(ResultCode.COMMON_FAIL.getMessage());
-        } finally {
-            if (file.exists()){
-                file.delete();
-            }
         }
         return courses;
     }

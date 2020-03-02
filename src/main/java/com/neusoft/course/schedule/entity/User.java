@@ -51,7 +51,9 @@ public class User implements Serializable {
             return false;
         }
         User user = (User)obj;
-        return this.id.equals(user.id) && (this.name == null ? user.name == null : this.name.equals(user.name)) && this.account.equals(user.account) && this.faculty.equals(user.faculty) && this.privilege.equals(user.privilege) && this.delete == user.delete && (this.email == null ? user.email == null : this.email.equals(user.email));
+        initEqual(this, user);
+
+        return ((this.id == null && user.id == null) ? true : user.id.equals(this.id)) && ((this.name == null && user.name == null) ? true : user.name.equals(this.name)) && ((this.account == null && user.account == null) ? true : user.account.equals(this.account)) && ((this.faculty == null && user.faculty == null) ? true : user.faculty.equals(this.faculty)) && ((this.privilege == null && user.privilege == null) ? true : user.privilege.equals(this.privilege)) && ((this.delete == null && user.delete == null) ? true : user.delete.equals(this.delete)) && ((this.email == null && user.email == null) ? true : user.email.equals(this.email)) && ((this.complete == null && user.complete == null) ? true : user.complete.equals(this.complete));
     }
 
     @Override
@@ -66,6 +68,36 @@ public class User implements Serializable {
         result = prime * result + delete;
         result = prime * result + ((email == null) ? 0 : email.hashCode());
         return result;
+    }
+
+    private void initEqual(User u1, User u2){
+        if (u1.id != null && u2.id == null){
+            u2.id = u1.id;
+        }
+        if (u1.name != null && u2.name == null){
+            u2.name = u1.name;
+        }
+        if (u1.password != null && u2.password == null){
+            u2.password = u1.password;
+        }
+        if (u1.privilege != null && u2.privilege == null){
+            u2.privilege = u1.privilege;
+        }
+        if (u1.faculty != null && u2.faculty == null){
+            u2.faculty = u1.faculty;
+        }
+        if (u1.account != null && u2.account == null){
+            u2.account = u1.account;
+        }
+        if (u1.delete != null && u2.delete == null){
+            u2.delete = u1.delete;
+        }
+        if (u1.complete != null && u2.complete == null){
+            u2.complete = u1.complete;
+        }
+        if (u1.email != null && u2.email == null){
+            u2.email = u1.email;
+        }
     }
 
 }

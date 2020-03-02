@@ -19,9 +19,29 @@ public class ServiceConstants {
     public static final String PERMISSION_ROLE_PRE = "ROLE_";
 
     /**
+     * 匿名用户（未登录状态）
+     */
+    public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
+
+    /**
      * 默认注册密码
      */
     public static final String DEFAULT_PASSWORD = "123456";
+
+    /**
+     * 数据库老师权限
+     */
+    public static final String DB_PRIVILEGE_TEACHER = "0";
+
+    /**
+     * 数据库院系负责人权限
+     */
+    public static final String DB_PRIVILEGE_DEPARTMENT_MAN = "0,1";
+
+    /**
+     * 数据库管理员权限
+     */
+    public static final String DB_PRIVILEGE_ADMIN = "0,1,2";
 
     /**
      * 老师权限

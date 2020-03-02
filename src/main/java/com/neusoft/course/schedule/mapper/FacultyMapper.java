@@ -60,4 +60,5 @@ public interface FacultyMapper {
      * @return
      */
     Faculty selectFacultyById(@Param("id") Integer id);
+
 }

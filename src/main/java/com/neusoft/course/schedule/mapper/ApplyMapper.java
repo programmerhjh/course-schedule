@@ -3,6 +3,7 @@ package com.neusoft.course.schedule.mapper;
 import com.neusoft.course.schedule.entity.Apply;
 import com.neusoft.course.schedule.vo.ApplyListVO;
 import com.neusoft.course.schedule.vo.CourseEditPageApplyListVO;
+import com.neusoft.course.schedule.vo.UserApplyListVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -86,4 +87,50 @@ public interface ApplyMapper {
      * @return
      */
     List<ApplyListVO> searchApplyByFacultyId(@Param("fcId") Integer fcId, @Param("key") String key);
+
+    /**
+     * 查询指定学年用户申请记录
+     * @param userId
+     * @param termId
+     * @return
+     */
+    List<UserApplyListVO> selectApplyByUserIdAndTermId(@Param("userId") Integer userId, @Param("termId") Integer termId);
+
+    /**
+     * 查询用户申请记录
+     * @param userId
+     * @return
+     */
+    List<UserApplyListVO> selectApplyByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 模糊搜索用户申请
+     * @param userId
+     * @param key 课程名
+     * @return
+     */
+    List<UserApplyListVO> selectApplyByUserIdAndKey(@Param("userId") Integer userId, @Param("key") String key);
+
+    /**
+     * 查询用户申请过的课程主键列表
+     * @param userId
+     * @return
+     */
+    List<Integer> getApplyIdsByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 删除指定用户申请课程的申请记录
+     * @param userId
+     * @param courseId
+     * @return
+     */
+    Integer deleteApplyByUserIdAndCourseId(@Param("userId") Integer userId, @Param("courseId") Integer courseId);
+
+    /**
+     * 保存申请信息
+     * @param apply
+     * @return
+     */
+    Integer saveApply(Apply apply);
+
 }

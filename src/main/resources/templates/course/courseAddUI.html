@@ -38,7 +38,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">理论课老师</label>
                         <div class="layui-input-block theoryTeacher">
-                            <select id="teacherList" lay-search>
+                            <select id="teacherList" >
                                 <option value="">请选择</option>
                             </select>
                         </div>
@@ -52,7 +52,7 @@
                     <div class="layui-form-item" style="padding-top: 20px;">
                         <label class="layui-form-label">实验课老师</label>
                         <div class="layui-input-block experimentClassTeacher">
-                            <select id="teacherExpList" lay-search>
+                            <select id="teacherExpList">
                                 <option value="">请选择</option>
                             </select>
                         </div>
@@ -169,7 +169,9 @@
     </div>
 <div th:insert="~{common/common::common}"/>
 <script type="text/javascript">
-    layui.use(['form','layer','layedit','laydate','upload'],function(){
+    layui.config({
+        base: "/static/js/lay/modules/"
+    }).extend({ insertSelect: "InsertSelect" }).use(['form','layer','layedit','laydate','upload','insertSelect'],function(){
         var form = layui.form,
             layer = parent.layer === undefined ? layui.layer : top.layer,
             laypage = layui.laypage,
@@ -177,9 +179,12 @@
             layedit = layui.layedit,
             laydate = layui.laydate,
             $ = layui.jquery,
-            table = layui.table;
+            table = layui.table,
+            insertSelect = layui.insertSelect;
         var teacherList = $("#teacherList");
         var teacherExpList = $("#teacherExpList");
+        insertSelect.render({ elem: '#teacherList', data: []});
+        insertSelect.render({ elem: '#teacherExpList', data: []});
         $(document).ready(function () {
             var state = $(".state").val();
             var url = "/admin/courseAddData/" + $(".facultyId").val() + '/' + $(".semesterId").val();
@@ -300,14 +305,14 @@
                 "startWeek": $(".startWeek").val() === undefined ? null : $(".startWeek").val(),
                 "endWeek": $(".endWeek").val() === undefined ? null : $(".endWeek").val(),
                 "theoryClassType": $(".theoryClassType").val() === "" ||  $(".theoryClassType").val() === undefined ? null : $(".theoryClassType").val(),
-                "theoryTeacherId": $("#teacherList").val() === undefined ? null : $("#teacherList").val(),
-                "theoryTeacher": $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === "" ||  $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === undefined ? null : $(".theoryTeacher").find(".layui-this").text().split(" ")[0],
+                "theoryTeacher": $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === "" || $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === "请选择" ||  $(".theoryTeacher").find(".layui-this").text().split(" ")[0] === undefined ? null : $(".theoryTeacher").find(".layui-this").text().split(" ")[0],
+                "theoryTeacherId": $("#teacherList").val() === undefined || !$.isNumeric($("#teacherList").val()) ? null : $("#teacherList").val(),
                 "theoryPlanDesc": $(".theoryPlanDesc").val() === "" ||  $(".theoryPlanDesc").val() === undefined ? null : $(".theoryPlanDesc").val(),
                 "experimentPlanOnline": $(".experimentPlanOnline").val() === "" ||  $(".experimentPlanOnline").val() === undefined ? null : $(".experimentPlanOnline").val(),
                 "experimentClass": $(".experimentClass").val() === "" ||  $(".experimentClass").val() === undefined ? null : $(".experimentClass").val(),
                 "experimentClassType": $(".experimentClassType").val() === "" ||  $(".experimentClassType").val() === undefined ? null : $(".experimentClassType").val(),
-                "experimentClassTeacherId": $("#teacherExpList").val() === undefined ? null : $("#teacherExpList").val(),
-                "experimentClassTeacher": $(".experimentClassTeacher").find(".layui-this").text() === "" ||  $(".experimentClassTeacher").find(".layui-this").text() === undefined ? null : $(".experimentClassTeacher").find(".layui-this").text(),
+                "experimentClassTeacher": $(".experimentClassTeacher").find(".layui-this").text() === "" || $(".experimentClassTeacher").find(".layui-this").text().split(" ")[0] === "请选择" ||  $(".experimentClassTeacher").find(".layui-this").text() === undefined ? null : $(".experimentClassTeacher").find(".layui-this").text(),
+                "experimentClassTeacherId": $("#teacherExpList").val() === undefined || !$.isNumeric($("#teacherExpList").val()) ? null : $("#teacherExpList").val(),
                 "experimentClassPlanDesc": $(".experimentClassPlanDesc").val() === "" ||  $(".experimentClassPlanDesc").val() === undefined ? null : $(".experimentClassPlanDesc").val(),
                 "director": $(".director").val() === "" ||  $(".director").val() === undefined ? null : $(".director").val(),
                 "researchOffice": $(".researchOffice").val() === "" ||  $(".researchOffice").val() === undefined ? null : $(".researchOffice").val(),

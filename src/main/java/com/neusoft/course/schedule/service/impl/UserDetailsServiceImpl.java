@@ -4,6 +4,7 @@ import com.neusoft.course.schedule.constants.ServiceConstants;
 import com.neusoft.course.schedule.enums.ResultCode;
 import com.neusoft.course.schedule.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
@@ -54,6 +55,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 return new User(user.getAccount(), user.getPassword(), true, true, true, false, grantedAuthorities);
             }
             return new User(user.getName(), user.getPassword(), true, true, true, false, grantedAuthorities);
+        }
+        if (!user.getPrivilege().equals(ServiceConstants.DB_PRIVILEGE_ADMIN) && user.getComplete().equals(0)){
+            return new User(user.getName(), user.getPassword(), true, false, true, true, grantedAuthorities);
         }
         if (StringUtils.isEmpty(user.getName()) || username.equals(user.getAccount())){
             return new User(user.getAccount(), user.getPassword(), true, true, true, true, grantedAuthorities);

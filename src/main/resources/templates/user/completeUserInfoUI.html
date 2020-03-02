@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>完善用户资料</title>
+</head>
+<body>
+<br>
+<div class="layui-form layui-row layui-col-space10">
+    <div class="layui-col-md9 layui-col-xs12">
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md9 layui-col-xs7">
+                <input type="hidden" class="layui-input id">
+                <input type="hidden" class="layui-input account">
+                <div class="layui-form-item magt3">
+                    <label class="layui-form-label layui-required">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input name" lay-verify="required" placeholder="请输入姓名(可用于登录)">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">院系</label>
+                    <div class="layui-input-block faculty">
+                        <select id="facultyList" lay-search lay-verify="required">
+                            <option value="">请选择所属院系</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item magt3">
+                    <label class="layui-form-label layui-required">邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input email" lay-verify="email|required" placeholder="请输入邮箱(用于找回密码)">
+                    </div>
+                </div>
+                <div class="layui-form-item magt3">
+                    <label class="layui-form-label layui-required">新密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" class="layui-input" id="password" lay-verify="required" placeholder="请输入新密码">
+                    </div>
+                </div>
+                <div class="layui-form-item magt3">
+                    <label class="layui-form-label layui-required">重复密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" class="layui-input" id="rePassword" lay-verify="required" placeholder="重复输入密码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <button class="layui-btn layui-block" lay-filter="saveUserFilter" lay-submit id="saveUser" style="margin-left: 230px;margin-bottom: -80px;">保存</button>
+    </div>
+</div>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript" th:inline="JavaScript">
+
+    layui.use(['form','layer','layedit','laydate','upload'],function() {
+        var form = layui.form, layer = parent.layer === undefined ? layui.layer : top.layer,
+            laypage = layui.laypage,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            $ = layui.jquery;
+
+        var facultySelect = $("#facultyList"),
+            facultyList = JSON.parse([[${facultyList}]]);
+        for (var f in facultyList) {
+            facultySelect.append("<option value='" + facultyList[f].id + "'>" + facultyList[f].name + "</option>");
+        }
+        form.render();
+        $(document).ready(function () {
+            form.render();
+        })
+        form.on('submit(saveUserFilter)', function (data) {
+            if ($("#password").val() != $("#rePassword").val()){
+                top.layer.msg("两次密码不一致");
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "/admin/saveUser",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "id": $(".id").val() === undefined ? null : $(".id").val(),
+                    "faculty": parseInt($('.faculty select').val()) === NaN ? null : parseInt($('.faculty select').val()),
+                    "name": $(".name").val() === "" ||  $(".name").val() === undefined ? null : $(".name").val(),
+                    "account": $(".account").val(),
+                    "password": $("#password").val(),
+                    "email": $(".email").val() === "" ||  $(".email").val() === undefined ? null : $(".email").val(),
+                    "complete": 1
+                }),
+                success: function (res) {
+                    if (res.success) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg("操作成功, 请重新登录");
+                    } else {
+                        top.layer.msg(res.errorMsg);
+                    }
+                }
+            })
+        })
+    })
+
+</script>
+</body>
+</html>

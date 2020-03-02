@@ -115,4 +115,19 @@ public interface UserMapper {
      * @return
      */
     User selectUserByUserId(@Param("userId") Integer userId);
+
+    /**
+     * 查询院系下的用户
+     * @param fcId
+     * @return
+     */
+    List<User> selectUserListByFacultyId(@Param("fcId") Integer fcId);
+
+    /**
+     * 模糊搜索院系下的用户，包含用户名，账户，邮箱
+     * @param fcId
+     * @param key
+     * @return
+     */
+    List<User> searchFacultyUser(@Param("fcId") Integer fcId, @Param("key") String key);
 }

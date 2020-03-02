@@ -44,7 +44,10 @@ public enum ResultCode {
 
     FACULTY_NAME_ALREADY_EXIST(2014, "院系名已存在"),
     TERM_NAME_ALREADY_EXIST_THIS_FACULTY(2015, "学年名已在该院系下存在"),
+    USER_INFO_NOT_COMPLETE(2016, "账户信息未完善"),
     EXCEL_SHEET_SIZE_ERROR(2018, "密码修改成功"),
+
+    TERM_UNOPEN_APPLY(2019, "该学期尚未开放申请"),
 
     /* 业务错误 */
     NO_PERMISSION(3001, "没有权限");

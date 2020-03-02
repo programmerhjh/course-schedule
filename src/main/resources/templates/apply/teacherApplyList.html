@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>申请记录</title>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="~{common/head::head}"></div>
+    <div th:replace="~{common/leftnavbar::leftnav}"></div>
+    <div class="layui-body">
+        <form class="layui-form">
+            <blockquote class="layui-elem-quote quoteBox">
+                <div class="layui-inline">
+                    <div class="layui-form-item term">
+                        <select id="termList" lay-filter="termSelect" lay-search>
+                            <option value="">请选择学年</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="margin-top: -15px;">
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input searchVal" placeholder="请输入搜索的课程名" />
+                    </div>
+                    <a class="layui-btn search_btn" data-type="reload">搜索</a>
+                </div>
+            </blockquote>
+            <table id="applyListTable" lay-filter="applyListTable"></table>
+            <script type="text/html" id="applyListTableBar">
+                <button type="button" class="layui-btn layui-btn-xs" lay-event="edit" >编辑申请</button>
+                <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">撤销申请</button>
+            </script>
+        </form>
+    </div>
+    <div th:replace="~{common/footer::footer}"></div>
+</div>
+</body>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript" th:inline="JavaScript">
+    axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+    layui.use(['form', 'layer', 'laydate', 'table', 'laytpl'], function () {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : top.layer,
+            $ = layui.jquery,
+            laydate = layui.laydate,
+            laytpl = layui.laytpl,
+            table = layui.table;
+
+        var tableIns;
+
+        $(document).ready(function () {
+            termListRender([[${session.fcId}]]);
+            var url = "/teacher/getUserApplyList/" + [[${session.userId}]];
+            renderApply(url);
+        });
+
+        $(".search_btn").on("click", function () {
+            if ($(".searchVal").val() != '') {
+                tableIns.reload({
+                    url: '/teacher/searchUserApply',
+                    method: 'post',
+                    contentType: "application/json; charset=utf-8",
+                    parseData: function (res) {
+                        return {
+                            "errorCode": res.errorCode,
+                            "errorMsg": res.errorMsg,
+                            "data": res.data.data,
+                            "count": res.data.totalSize
+                        };
+                    },
+                    response: {
+                        statusName: 'errorCode',
+                        statusCode: 200,
+                        msgName: 'errorMsg'
+                    },
+                    where: {
+                        key: $(".searchVal").val(),
+                        page: this.page,
+                        limit: this.limit,
+                        userId: [[${session.userId}]]
+                    }
+                })
+                $("#termList").val("");
+                form.render();
+            } else {
+                layer.msg("请输入搜索的内容");
+            }
+        });
+
+        form.on('select(termSelect)', function (d) {
+            var url;
+            if (d.value === '') {
+                url = "/teacher/getUserApplyList/" + [[${session.userId}]];
+                renderApply(url);
+                return;
+            } else {
+                url = "/teacher/getUserApplyList/" + [[${session.userId}]] + "/" + d.value;
+                renderApply(url);
+            }
+        })
+
+        function renderApply(url) {
+            tableIns = table.render({
+                elem: '#applyListTable',
+                url: url,
+                method: 'post',
+                contentType: 'application/json',
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data.data,
+                        "count": res.data.totalSize
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                cellMinWidth: 95,
+                page: true,
+                height: "full",
+                limit: 12,
+                limits: [12, 20, 50],
+                cols: [
+                    [
+                        {field: 'id', hide: true},
+                        {field: 'termId', hide: true},
+                        {field: 'courseId', hide: true},
+                        {field: 'facultyName', title: '院系', align: "center"},
+                        {field: 'termName', title: '学期', align: "center"},
+                        {field: 'courseName', title: '课程', align: "center"},
+                        {field: 'name', title: '申请人', align: "center"},
+                        {field: 'reason', title: '申请理由', align: "center"},
+                        {
+                            field: 'createTime', title: '创建时间', align: 'center', templet: function (d) {
+                            if (d.createTime) {
+                                return layui.util.toDateString(d.createTime, 'yyyy年MM月dd日 HH:mm:ss');
+                            }
+                            return '无数据';
+                        }
+                        },
+                        {
+                            field: 'modifyTime', title: '最后修改时间', align: 'center', templet: function (d) {
+                            if (d.modifyTime) {
+                                return layui.util.toDateString(d.modifyTime, 'yyyy年MM月dd日 HH:mm:ss');
+                            }
+                            return '无数据';
+                        }
+                        },
+                        {field: 'state', title:'申请状态', fixed: "right", align: "center", templet: function (d) {
+                            if (d.state == 0) {
+                                return "<h4>新申请</h4>";
+                            } else if (d.state == 1){
+                                return "<h4 style='color: #01AAED'>已通过</h4>";
+                            } else {
+                                return "<h4 style='color: red'>未通过</h4>";
+                            }
+                        }},
+                        {title: '操作', width:200, toolbar:'#applyListTableBar', fixed:"right", align:"center"}
+                    ]
+                ]
+            });
+            form.render();
+        }
+
+        function termListRender(fcId) {
+            var url = '/admin/termList/' + fcId;
+            axios.get(url).then(
+                function (res) {
+                    if (!res.data.success) {
+                        layer.msg(res.data.errorMsg);
+                        return;
+                    }
+                    var dataArr = res.data.data.data;
+                    $("#termList").empty();
+                    $("#termList").append('<option value="">请选择学年</option>');
+                    for (var i=0;i<dataArr.length;i++){
+                        $("#termList").append('<option value="' + dataArr[i].id + '">&nbsp;' + dataArr[i].name + '</option>');
+                    }
+                    form.render();
+                }
+            );
+        }
+
+        table.on("tool(applyListTable)", function(obj){
+            var layEvent = obj.event,
+                data = obj.data;
+            if(layEvent === 'del'){
+                layer.confirm('确定撤销该申请吗？',{icon:3, title:'提示信息'},function(index){
+                    var url = "/teacher/deleteApplyCourse/" + data.courseId + "/" + [[${session.userId}]];
+                    axios.post(url,{}).then(
+                        function(res){
+                            if (!res.data.success){
+                                layer.msg(res.data.errorMsg);
+                                return;
+                            }
+                            tableIns.reload();
+                            layer.close(index);
+                        }
+                    );
+                });
+            } else if(layEvent === 'edit'){
+                addApplyCourse(data);
+            }
+        });
+        function addApplyCourse(data) {
+            layui.layer.open({
+                title : "用户申请课程信息操作页",
+                type : 2,
+                content : "/teacher/addApplyCourseUI",
+                area: ['500px', '500px'],
+                success : function(layero, index){
+                    var body = layui.layer.getChildFrame('body', index);
+                    body.find(".id").val(data.id);
+                    body.find(".courseId").val(data.courseId);
+                    body.find(".termId").val(data.termId);
+                    body.find(".reason").val(data.reason);
+                    body.find(".state").val(data.state);
+                }
+            })
+        }
+    })
+</script>
+</html>

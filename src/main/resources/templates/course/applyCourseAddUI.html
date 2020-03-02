@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>用户申请课程信息操作页</title>
+</head>
+<body>
+    <br>
+    <div class="layui-form layui-row layui-col-space10">
+        <div class="layui-col-md9 layui-col-xs12">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-md9 layui-col-xs7">
+                    <input type="hidden" class="layui-input id">
+                    <input type="hidden" class="layui-input courseId">
+                    <input type="hidden" class="layui-input termId">
+                    <input type="hidden" class="layui-input state">
+                    <div class="layui-form-item magt3">
+                        <label class="layui-form-label layui-required">申请理由</label>
+                        <div class="layui-input-block">
+                            <textarea style="margin: 0px -193.984px 0px 0px; height: 280px; width: 375px;font-family: sans-serif;font-size:16px;line-height:1.5" type="text/plain" class="layui-input reason" lay-verify="required"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn layui-block" lay-filter="saveCourseApply" lay-submit id="saveCourseApply" style="margin-left: 220px;margin-bottom: -150px;">保存</button>
+        </div>
+    </div>
+</body>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript" th:inline="JavaScript">
+    layui.use(['form','layer','layedit','laydate','upload'],function() {
+        var form = layui.form, layer = parent.layer === undefined ? layui.layer : top.layer,
+            laypage = layui.laypage,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            $ = layui.jquery;
+
+        form.render();
+        $(document).ready(function () {
+            form.render();
+        })
+
+        form.on('submit(saveCourseApply)', function () {
+            var index = top.layer.msg('数据提交中，请稍候', {icon: 16, time: false, shade: 0.8});
+            $.ajax({
+                type: "POST",
+                url: "/teacher/saveCourseApply",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "id": $(".id").val() == "" || $(".id").val() == undefined ? null : $(".id").val(),
+                    "desc": $(".reason").val(),
+                    "taskId": $(".courseId").val(),
+                    "termId": $(".termId").val(),
+                    "facultyId": [[${session.fcId}]],
+                    "userId": [[${session.userId}]],
+                    "state": $(".state").val()
+                }),
+                success: function (res) {
+                    if (res.success) {
+                        top.layer.close(index);
+                        top.layer.msg("操作成功！");
+                        setTimeout(function () {
+                            layer.closeAll("iframe");
+                        },1000);
+                    } else {
+                        top.layer.close(index);
+                        top.layer.msg(res.errorMsg);
+                    }
+                }
+            })
+        })
+    })
+</script>
+</html>

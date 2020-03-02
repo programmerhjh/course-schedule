@@ -2,6 +2,7 @@ package com.neusoft.course.schedule.service;
 
 import com.neusoft.course.schedule.dto.ExportExcelByFacultyAndTermDTO;
 import com.neusoft.course.schedule.dto.SearchCourseDTO;
+import com.neusoft.course.schedule.dto.SearchUserApplyDTO;
 import com.neusoft.course.schedule.dto.UploadExcelImportCourseDTO;
 import com.neusoft.course.schedule.entity.Course;
 import com.neusoft.course.schedule.entity.PageEntity;
@@ -9,6 +10,7 @@ import com.neusoft.course.schedule.entity.PageResult;
 import com.neusoft.course.schedule.vo.CourseAddPageSelectUserVO;
 import com.neusoft.course.schedule.vo.CourseEditPageApplyListVO;
 import com.neusoft.course.schedule.vo.CourseHistoryTeacherVO;
+import com.neusoft.course.schedule.vo.UserCourseTermInfoVO;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.util.List;
@@ -90,4 +92,38 @@ public interface CourseService {
      * @param uploadExcelImportCourseDTO
      */
     void analyzeExcelImportCourse(UploadExcelImportCourseDTO uploadExcelImportCourseDTO);
+
+    /**
+     * 分页查出用户课程列表
+     * @param userId
+     * @param pageEntity
+     * @return
+     */
+    PageResult<Course> getCourseHistory(Integer userId, PageEntity pageEntity);
+
+    /**
+     * 分页查出用户指定学期的课程列表
+     * @param userId
+     * @param termId
+     * @param pageEntity
+     * @return
+     */
+    PageResult<Course> getCourseHistory(Integer userId, Integer termId, PageEntity pageEntity);
+
+    /**
+     * 模糊搜索用户的课程列表
+     * @param searchUserApplyDTO
+     * @return
+     */
+    PageResult<Course> searchUserHistoryCourse(SearchUserApplyDTO searchUserApplyDTO);
+
+    /**
+     * 计算用户当前学期的课程信息
+     * @param userId
+     * @param fcId
+     * @param termId
+     * @return
+     */
+    UserCourseTermInfoVO getUserCourseTermInfo(Integer userId, Integer fcId, Integer termId);
+
 }

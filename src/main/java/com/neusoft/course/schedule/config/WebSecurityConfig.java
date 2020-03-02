@@ -4,13 +4,10 @@ import com.neusoft.course.schedule.handler.CustomizeLogoutSuccessHandler;
 import com.neusoft.course.schedule.handler.LoginAuthenticationFailureHandler;
 import com.neusoft.course.schedule.handler.LoginAuthenticationSuccessHandler;
 import com.neusoft.course.schedule.handler.entrypoint.CustomizeAuthenticationEntryPoint;
-import com.neusoft.course.schedule.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -68,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(logoutSuccessHandler).deleteCookies("JSESSIONID")
             .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint) //匿名用户访问无权限资源时的异常处理
             .and().authorizeRequests()
-                .antMatchers("/user/loginUI", "/user/logout", "/user/checkAccountWithEmail", "/user/updateNewPassword")
+                .antMatchers("/user/loginUI", "/user/logout", "/user/checkAccountWithEmail", "/user/updateNewPassword", "/user/completeUserInfoUI", "/admin/saveUser")
                 .permitAll().anyRequest().authenticated(); //不校验我们配置的登录页面
     }
 

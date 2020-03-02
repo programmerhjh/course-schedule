@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>课程历史</title>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="~{common/head::head}"></div>
+    <div th:replace="~{common/leftnavbar::leftnav}"></div>
+    <div class="layui-body">
+        <form class="layui-form">
+            <blockquote class="layui-elem-quote quoteBox">
+                <div class="layui-inline">
+                    <div class="layui-form-item term">
+                        <select id="termList" lay-filter="termSelect" lay-search>
+                            <option value="">请选择学年</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="margin-top: -15px;">
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input searchVal" placeholder="请输入搜索的课程名" />
+                    </div>
+                    <a class="layui-btn search_btn" data-type="reload">搜索</a>
+                </div>
+            </blockquote>
+            <table id="courseListTable" lay-filter="courseListTable"></table>
+        </form>
+    </div>
+    <div th:replace="~{common/footer::footer}"></div>
+</div>
+</body>
+<div th:insert="~{common/common::common}"/>
+<script type="text/javascript" th:inline="JavaScript">
+    axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+    layui.use(['form', 'layer', 'laydate', 'table', 'laytpl'], function () {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : top.layer,
+            $ = layui.jquery,
+            laydate = layui.laydate,
+            laytpl = layui.laytpl,
+            table = layui.table;
+
+        var termSelect = $("#termList"), tableIns, url;
+        form.render();
+        $(document).ready(function () {
+            url = '/admin/termList/' + [[${session.fcId}]];
+            axios.get(url).then(
+                function (res) {
+                    if (!res.data.success) {
+                        layer.msg(res.data.errorMsg);
+                        return;
+                    }
+                    var dataArr = res.data.data.data;
+                    for (var i=0;i<dataArr.length;i++){
+                        termSelect.append('<option value="' + dataArr[i].id + '">&nbsp;' + dataArr[i].name + '</option>');
+                    }
+                    form.render();
+                }
+            );
+            renderTable("/teacher/getCourseHistory/" + [[${session.userId}]]);
+        })
+        form.render();
+
+        form.on('select(termSelect)', function (d) {
+            var url = "/teacher/getCourseHistory/" + [[${session.userId}]] + "/" + d.value;
+            if (d.value === ''){
+                url = "/teacher/getCourseHistory/" + [[${session.userId}]];
+                renderTable(url);
+                return;
+            }
+            renderTable(url);
+        })
+
+        function renderTable(url) {
+            tableIns = table.render({
+                elem: '#courseListTable',
+                url: url,
+                method: 'post',
+                contentType: 'application/json',
+                parseData: function (res) {
+                    return {
+                        "errorCode": res.errorCode,
+                        "errorMsg": res.errorMsg,
+                        "data": res.data.data,
+                        "count": res.data.totalSize
+                    };
+                },
+                response: {
+                    statusName: 'errorCode',
+                    statusCode: 200,
+                    msgName: 'errorMsg'
+                },
+                cellMinWidth: 95,
+                page: true,
+                height: "full",
+                limit: 12,
+                limits: [12, 20, 50],
+                cols: [
+                    [
+                        {field: 'name', title: '课程名称', width: 150, align: "center"},
+                        {field: 'num', title: '课程编号', align: "center"},
+                        {field: 'score', title: '学分', align: "center"},
+                        {field: 'time', title: '课程课时', align: "center"},
+                        {field: 'className', title: '教学班名称', width: 120, align: "center"},
+                        {field: 'classCount', title: '上课人数', align: "center"},
+                        {field: 'onlineNum', title: '开课编号', align: "center"},
+                        {field: 'startWeek', title: '起始周', align: "center"},
+                        {field: 'endWeek', title: '结束周', align: "center"},
+                        {field: 'theoryTeacher', title: '理论课任课老师', width: 180, align: "center"},
+                        {field: 'theoryClassType', title: '理论课教室及类型要求', width: 250, align: "center"},
+                        {field: 'theoryPlanDesc', title: '理论课排课要求', width: 250, align: "center"},
+                        {field: 'experimentClassTeacher', title: '实验课任课老师', width: 180, align: "center"},
+                        {field: 'experimentPlanOnline', title: '实验课上课周次及节次', width: 250, align: "center"},
+                        {field: 'experimentClass', title: '实验室名称', width: 250, align: "center"},
+                        {field: 'experimentClassType', title: '实验课班型', width: 250, align: "center"},
+                        {field: 'experimentClassPlanDesc', title: '实验课排课要求', width: 250, align: "center"},
+                        {field: 'director', title: '课程主任', align: "center"},
+                        {field: 'researchOffice', title: '所属教研室', width: 250, align: "center"},
+                        {field: 'evaluationTeacher', title: '评建老师', align: "center"},
+                        {
+                            field: 'createTime', title: '创建时间', width: 250, align: 'center', templet: function (d) {
+                            if (d.createTime) {
+                                return layui.util.toDateString(d.createTime, 'yyyy年MM月dd日 HH:mm:ss');
+                            }
+                            return '无数据';
+                        }
+                        }
+                    ]
+                ]
+            });
+            form.render();
+        }
+        
+        $(".search_btn").on("click", function () {
+            if ($(".searchVal").val() != '') {
+                tableIns.reload({
+                    url: '/teacher/searchUserHistoryCourse',
+                    method: 'post',
+                    contentType: "application/json; charset=utf-8",
+                    parseData: function (res) {
+                        return {
+                            "errorCode": res.errorCode,
+                            "errorMsg": res.errorMsg,
+                            "data": res.data.data,
+                            "count": res.data.totalSize
+                        };
+                    },
+                    response: {
+                        statusName: 'errorCode',
+                        statusCode: 200,
+                        msgName: 'errorMsg'
+                    },
+                    where: {
+                        key: $(".searchVal").val(),
+                        page: this.page,
+                        limit: this.limit,
+                        userId: [[${session.userId}]]
+                    }
+                })
+                $("#termList").val("");
+                form.render();
+            } else {
+                layer.msg("请输入搜索的内容");
+            }
+        });
+
+    })
+</script>
+</html>

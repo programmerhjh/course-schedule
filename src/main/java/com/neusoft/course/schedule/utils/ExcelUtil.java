@@ -354,8 +354,9 @@ public class ExcelUtil {
      */
     public <T, S> List<T> parseObjectFromExcel(File file, Class<T> aimClass, S extendObj) {
         List<T> result = new ArrayList<>();
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
+            fis = new FileInputStream(file);
             Workbook workbook = WorkbookFactory.create(fis);
             //对excel文档的第一页,即sheet1进行操作
             if(workbook.getNumberOfSheets() > 1){
@@ -384,6 +385,7 @@ public class ExcelUtil {
                     Cell cell = row.getCell(j);
                     if (cell == null)
                         continue;
+                    cell.setCellType(CellType.STRING);
                     String cellContent = cell.getStringCellValue();
                     cellContent = ObjectUtils.isEmpty(cellContent) ? null : cellContent;
                     if (z <= 11 && ObjectUtils.isEmpty(cellContent)){
@@ -411,14 +413,23 @@ public class ExcelUtil {
                 }
                 result.add(parseObject);
             }
-            fis.close();
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("An error occured when parsing object from Excel. at " + this.getClass());
+            e.printStackTrace();
+        } finally {
+            if (fis != null){
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (file.exists()){
+                file.delete();
+            }
         }
         return result;
-
     }
 
     private void courseServiceExtend(Object parseObject, Object aimClass, Object extendObj){

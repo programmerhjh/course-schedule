@@ -84,8 +84,6 @@ layui.use(['form','layer','laydate','table','laytpl'],function(){
         })
     })
 
-    $("#excel_operator").hide();
-
     $("#excel-export").on('click', function () {
         layer.open({
             title: "导出课表",
@@ -109,4 +107,31 @@ layui.use(['form','layer','laydate','table','laytpl'],function(){
             }
         })
     })
+
+    $("#dm-excel-export").on('click', function () {
+        layer.open({
+            title: "导出课表",
+            type: 2,
+            content: "/leadership/excelExportUI",
+            area: ['430px', '230px'],
+            success: function (layero, index) {
+                var body = layui.layer.getChildFrame('body', index);
+            }
+        })
+    })
+
+    $("#dm-excel-import").on('click', function () {
+        layer.open({
+            title: "导入课表",
+            type: 2,
+            content: "/leadership/excelImportUI",
+            area: ['430px', '270px'],
+            success: function (layero, index) {
+                var body = layui.layer.getChildFrame('body', index);
+            }
+        })
+    })
+
+
+
 })

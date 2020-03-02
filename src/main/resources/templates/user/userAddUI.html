@@ -102,7 +102,8 @@
                     "delete": data.field.delete === "on" ? 1 : 0,    //是否禁用
                     "account": $(".account").val(),  //账号
                     "name": $(".name").val() === "" ||  $(".name").val() === undefined ? null : $(".name").val(),  //用户名
-                    "email": $(".email").val() === "" ||  $(".email").val() === undefined ? null : $(".email").val()  //邮箱
+                    "email": $(".email").val() === "" ||  $(".email").val() === undefined ? null : $(".email").val(), //邮箱
+                    "complete": 0
                 }),
                 success: function (res) {
                     if (res.success) {

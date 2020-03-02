@@ -61,4 +61,10 @@ public interface FacultyService {
      */
     Integer saveFaculty(Faculty faculty);
 
+    /**
+     * 根据ID获取院系
+     * @param fcId
+     * @return
+     */
+    Faculty getFacultyDataById(Integer fcId);
 }

@@ -5,31 +5,24 @@
     <title>Excel 课程导入</title>
 </head>
 <body>
-    <div class="layui-form">
-        <br>
-        &nbsp;&nbsp;&nbsp;
-        <div class="layui-inline">
-            <div class='layui-form-item excelFaculty'>
-                <select id='excelFacultyList' lay-filter='excelFacultySelect' lay-search>
-                    <option value=''>请选择院系</option>
-                </select>
-            </div>
+<div class="layui-form">
+    <br>
+    &nbsp;&nbsp;&nbsp;
+    <div class="layui-inline" style="width: 390px;">
+        <div class='layui-form-item excelTerm'>
+            <select id='excelTermList' lay-search>
+                <option value=''>请选择学年</option>
+            </select>
         </div>
-        <div class="layui-inline">
-            <div class='layui-form-item excelTerm'>
-                <select id='excelTermList' lay-search>
-                    <option value=''>请选择学年</option>
-                </select>
-            </div>
-        </div>
-        <input style="width: 391.5px;margin-left: 15px;" type="text" id="chooseFile" class="layui-input" placeholder="请选择 xls,xlsx 类型文件">
-        <br>
-        <div class="layui-progress layui-progress-big" style="width: 391.5px;margin-left: 15px;" lay-filter="progressFilter" lay-showPercent="true">
-            <div class="layui-progress-bar" lay-percent="0%"></div>
-        </div>
-        <button class="layui-btn layui-inline" id="execute" style="margin-left:343px;margin-bottom: -80px;">导入</button>
-        <button class="layui-btn layui-inline" id="getTemplate" style="margin-left:-396px;margin-bottom: -80px;">获取导入模板</button>
     </div>
+    <input style="width: 391.5px;margin-left: 15px;" type="text" id="chooseFile" class="layui-input" placeholder="请选择 xls,xlsx 类型文件">
+    <br>
+    <div class="layui-progress layui-progress-big" style="width: 391.5px;margin-left: 15px;" lay-filter="progressFilter" lay-showPercent="true">
+        <div class="layui-progress-bar" lay-percent="0%"></div>
+    </div>
+    <button class="layui-btn layui-inline" id="execute" style="margin-left:343px;margin-bottom: -80px;">导入</button>
+    <button class="layui-btn layui-inline" id="getTemplate" style="margin-left:-396px;margin-bottom: -80px;">获取导入模板</button>
+</div>
 </body>
 <div th:insert='~{common/common::common}'/>
 <script type='text/javascript'>
@@ -75,7 +68,7 @@
             ,before: function(obj){
                 loadIndex = layer.load();
                 this.data = {
-                    fcId: $('#excelFacultyList').val(),
+                    fcId: [[${session.fcId}]],
                     termId: $('#excelTermList').val()
                 }
             }
@@ -95,24 +88,7 @@
         });
 
         $(document).ready(function () {
-            var url = '/admin/facultyList';
-            axios.post(url, {}).then(function (res) {
-                if (!res.data.success) {
-                    layer.msg(res.data.errorMsg);
-                    return;
-                }
-                var dataArr = res.data.data.data;
-                for (var i = 0; i < dataArr.length; i++) {
-                    $('#excelFacultyList').append('<option value=' + dataArr[i].id + '> ' + dataArr[i].name + '</option>');
-                }
-                form.render();
-            });
-        })
-        form.on('select(excelFacultySelect)', function (d) {
-            if (d.value === '') {
-                return;
-            }
-            var url = '/admin/termList/' + d.value;
+            var url = '/admin/termList/' + [[${session.fcId}]];
             axios.get(url).then(function (res) {
                 if (!res.data.success) {
                     layer.msg(res.data.errorMsg);
